@@ -1,4 +1,4 @@
-## NanosSolveIT platform
+## NanoSolveIT platform
 
 The Repo contains the Yaml files that deploy the NanoSolveIT platform on a cloud. 
 
