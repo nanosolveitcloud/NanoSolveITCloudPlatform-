@@ -1,0 +1,34 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nanopot-app
+  namespace: nanopot
+spec:
+  selector:
+    app: nanopot-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: nanopot-app
+  namespace: nanopot
+spec:
+  selector:
+    matchLabels:
+      app: nanopot-app
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: nanopot-app
+      labels:
+        app: nanopot-app
+    spec:
+      containers:
+      - name: nanopot-app
+        image: nanosolveit/nanopot
+        ports:
+        - containerPort: 80

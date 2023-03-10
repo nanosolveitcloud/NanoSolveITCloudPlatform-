@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nanofase-api-secure
+  namespace: nanofase
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts: 
+    - nanofaseapi.cloud.nanosolveit.eu
+    secretName: nanofase-api-cert
+  rules:
+  - host: nanofaseapi.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: nanofase-api
+          servicePort: 5000
+        path: /

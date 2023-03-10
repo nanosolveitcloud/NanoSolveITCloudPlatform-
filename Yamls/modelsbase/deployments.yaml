@@ -1,0 +1,236 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaqpot-python-generic-service
+  namespace: modelsbase
+spec:
+  selector:
+    app: jaqpot-python-generic
+  ports:
+  - protocol: TCP
+    port: 8002
+    targetPort: 8002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaqpot-python-generic
+  namespace: modelsbase
+spec:
+  selector:
+    matchLabels:
+      app: jaqpot-python-generic
+  replicas: 1
+  template:
+    metadata:
+      name: jaqpot-python-generic
+      labels:
+        app: jaqpot-python-generic
+    spec:
+      containers:
+      - name: jaqpot-python-generic
+        image: euclia/jaqpot-python-generic
+        ports:
+        - containerPort: 8002
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaqpot-validation-service
+  namespace: modelsbase
+spec:
+  selector:
+    app: jaqpot-validation
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: jaqpot-validation-deployment
+  namespace: modelsbase
+spec:
+  selector:
+    matchLabels:
+      app: jaqpot-validation
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: jaqpot-validation
+      labels:
+        app: jaqpot-validation
+    spec:
+      containers:
+      - name: jaqpot-validation
+        image: euclia/jaqpot-validation
+        ports:
+        - containerPort: 5000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaqpot-r-generic-service
+  namespace: modelsbase
+spec:
+  selector:
+    app: jaqpot-r-generic
+  ports:
+  - protocol: TCP
+    port: 8004
+    targetPort: 8004
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: jaqpot-r-generic-deployment
+  namespace: modelsbase
+spec:
+  selector:
+    matchLabels:
+      app: jaqpot-r-generic
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: jaqpot-r-generic
+      labels:
+        app: jaqpot-r-generic
+    spec:
+      containers:
+      - name: jaqpot-r-generic
+        image: euclia/jpdi-r
+        ports:
+        - containerPort: 8004
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaqpot-api-service
+  namespace: modelsbase
+spec:
+  selector:
+    app: jaqpot-api
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaqpot-api-exposed
+  namespace: modelsbase
+spec:
+  type: NodePort
+  selector:
+    app: jaqpot-api
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    nodePort: 30180
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: jaqpot-api-deployment
+  namespace: modelsbase
+spec:
+  selector:
+    matchLabels:
+      app: jaqpot-api
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: jaqpot-api
+      namespace: modelsbase
+      labels:
+        app: jaqpot-api
+    spec:
+      containers:
+      - name: jaqpot-api
+        image: nanosolveit/modelsbase-api:latest
+        ports:
+        - containerPort: 8080
+        env:
+          - name: JAQPOT_BASE_SERVICE
+            value: https://modelsbase.cloud.nanosolveit.eu/modelsbase/services/
+          - name: JAQPOT_LOCAL_IP
+            value: http://78.108.37.109:30180
+          - name: JAQPOT_SCHEMA
+            value: https
+          - name: JAQPOT_HOST
+            value: modelsbase.cloud.nanosolveit.eu
+          - name: JAQPOT_PORT
+            value: '443'
+          - name: JAQPOT_BASE
+            value: /jaqpot/services
+          - name: JAQPOT_CORS_ALLOWORIGIN
+            value: '*'
+          - name: JAQPOT_DB_HOST
+            value: mongodb-service.dbs
+          - name: JAQPOT_DB_PORT
+            value: '27017'
+          - name: JAQPOT_DB_NAME
+            value: modelsbase
+          - name: JAQPOT_EXPERIMENTAL_DESIGNS_HOST  
+            value: "http://jaqpot-experimental-service.jaqpot:8004/"
+          - name: JAQPOT_BASE_ALGORITHMS
+            value: "http://jaqpot-algorithms-service.jaqpot:8080/"
+          - name: PYTHON_ALGORITHMS_HOST
+            value: "http://jaqpot-python-algorithms-service.jaqpot:5000/"
+          - name: JAQPOT_READACROSS
+            value: "http://jaqpot-readacross-service.jaqpot:5000/"
+          - name: PKSIM_BASE
+            value: "http://147.102.86.129:9999/"
+          - name: HTTK_BASE
+            value: "http://jaqpot-httk-service.jaqpot:8004/"
+          - name: JAQPOT_BASE_VALIDATION
+            value: "http://jaqpot-validation-service.jaqpot:5000/pws/validation"
+          - name: OIDC_ISSUER
+            value: "https://login.cloud.nanosolveit.eu/auth/realms/nanosolveit/"
+          - name: OIDC_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: oidc-secret
+                key: clientid
+          - name: OIDC_CLIENT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: oidc-secret
+                key: secret
+          - name: OIDC_PROVIDER_CONF
+            value: ".well-known/openid-configuration"
+          - name: KAFKA_BOOTSTRAP
+            value: "bootstrap.kafka:9092"
+          - name: KAFKA_EXISTS
+            value: "false"
+          - name: KAFKA_REPLICATION
+            value: "3"
+          - name: ELASTIC_HOST
+            value: "elasticsearch.elasticsearch"
+          - name: ELASTIC_PORT
+            value: "9200"
+          - name: ELASTIC_EXISTS
+            value: "false"
+          - name: REDIS_EXISTS
+            value: "false"
+          - name: REDIS_ON_CLUSTER
+            value: "false"
+          - name: REDIS_CLUSTER
+            value: "redis-cluster.redis:6379"
+          - name: JAQPOT_ENV
+            value: "prod"
+          - name: QUOTS_EXISTS
+            value: "false"
+          - name: QUOTS_URL
+            value: "http://quots-app.quots:8000"
+          - name: QUOTS_APP
+            value: "JAQPOT"
+          - name: "QUOTS_APP_SECRET"
+            value: "JAQPOT"
+          - name: "EUCLIA_ACCOUNTS_URL"
+            value: "http://accounts-api.accounts:8006"
+          - name: "ACCOUNTS_EXISTS"
+            value: "false"

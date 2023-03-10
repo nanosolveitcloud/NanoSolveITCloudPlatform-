@@ -1,0 +1,66 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nanoimage-service
+  namespace: nanoimage
+spec:
+  selector:
+    app:  nanoimage-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nanoimage-app
+  namespace: nanoimage
+spec:
+  selector:
+    matchLabels:
+      app: nanoimage-app
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: nanoimage-app
+      labels:
+        app: nanoimage-app
+    spec:
+      containers:
+      - name: nanoimage-app
+        image: euclia/nanoimage:agg
+        ports:
+        - containerPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nanoimage-ingress
+  namespace: nanoimage
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+#    kubernetes.io/ingress.allow-http: "true"
+#    ingress.kubernetes.io/ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: /nanoImage
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"    
+spec:
+  tls:
+  - hosts:
+    - nanoimage.cloud.nanosolveit.eu
+    secretName: nanoimage-api-cert    
+  rules:
+  - host: nanoimage.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: nanoimage-service
+          servicePort: 8080
+        path: /
+  - host: nanoimage.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: nanoimage-service
+          servicePort: 8080
+        path: /nanoImage/

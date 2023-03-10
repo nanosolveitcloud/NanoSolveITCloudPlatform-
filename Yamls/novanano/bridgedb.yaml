@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bridgedb-novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: bridgedb-novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bridgedb-novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: bridgedb-novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: bridgedb-novanano-app
+      labels:
+        app: bridgedb-novanano-app
+    spec:
+      containers:
+      - name: bridgedb-novanano-app
+        image: bigcatum/bridgedb:3.0.13.20220304
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

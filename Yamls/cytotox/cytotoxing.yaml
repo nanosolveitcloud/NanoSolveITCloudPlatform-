@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cytotox-app-secure
+  namespace: nanopot
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - cytotoxicity.cloud.nanosolveit.eu
+    secretName: cytotox-app-cert-ingress
+  rules:
+  - host: cytotoxicity.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: cytotox-app
+          servicePort: 80
+        path: /

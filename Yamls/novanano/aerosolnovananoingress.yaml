@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: novanano2-app-secure
+  namespace: novanano-apps
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - aerosol.cloud.nanosolveit.eu
+    secretName: aerosol-app-cert
+  rules:
+  - host: aerosol.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: aerosol-novanano-service
+          servicePort: 8080
+        path: /

@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: vythos-app-secure
+  namespace: shiny-apps
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    certmanager.k8s.io/acme-http01-edit-in-place: "true"
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+  - hosts: 
+    - vythos.cloud.nanosolveit.eu
+    secretName: vythos-app-cert
+  rules:
+  - host: vythos.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: vythos-service
+          servicePort: 3838
+        path: /

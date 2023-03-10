@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nanopot-app-secure
+  namespace: nanopot
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - nanopot.cloud.nanosolveit.eu
+    secretName: nanopot-app-cert-ingress
+  rules:
+  - host: nanopot.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: nanopot-app
+          servicePort: 80
+        path: /

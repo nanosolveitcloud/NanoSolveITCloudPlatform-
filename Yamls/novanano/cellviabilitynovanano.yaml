@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cellviability-novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: cellviability-novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cellviability-novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: cellviability-novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: cellviability-novanano-app
+      labels:
+        app: cellviability-novanano-app
+    spec:
+      containers:
+      - name: cellviability-novanano-app
+        image: atsoumanis/cellviability
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

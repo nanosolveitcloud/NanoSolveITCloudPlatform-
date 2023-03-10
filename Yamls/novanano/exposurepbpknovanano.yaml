@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: exposurepbpk-novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: exposurepbpk-novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exposurepbpk-novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: exposurepbpk-novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: exposurepbpk-novanano-app
+      labels:
+        app: exposurepbpk-novanano-app
+    spec:
+      containers:
+      - name: exposurepbpk-novanano-app
+        image: novamechanics/exposurepbpk
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

@@ -1,0 +1,39 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: funmappone-service
+  namespace: shiny-apps
+spec:
+  type: NodePort
+  selector:
+    app: funmappone-app
+  ports:
+  - protocol: TCP
+    port: 3838
+    targetPort: 3838
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: funmappone-app
+  namespace: shiny-apps
+spec:
+  selector:
+    matchLabels:
+      app: funmappone-app
+  replicas: 1
+  template:
+    metadata:
+      name: funmappone-app
+      labels:
+        app: funmappone-app
+    spec:
+      containers:
+      - name: funmappone-app
+        image: grecolab/funmappone:3.5.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3838
+          name: funmappone
+

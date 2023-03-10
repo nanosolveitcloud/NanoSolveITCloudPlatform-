@@ -1,0 +1,67 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: virtuoso-exposed
+  namespace: virtuoso
+spec:
+  type: NodePort
+  selector:
+    app: virtuoso
+  ports:
+  - protocol: TCP
+    port: 8890
+    targetPort: 8890
+    nodePort: 30144
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: virtuoso-deployment
+  namespace: virtuoso
+spec:
+  selector:
+    matchLabels:
+      app: virtuoso
+  replicas: 1
+  template:
+    metadata:
+      name: virtuoso
+      namespace: virtuoso
+      labels:
+        app: virtuoso
+    spec:
+      containers:
+      - name: virtuoso
+        image: aammar/virtuoso-httpd:latest
+        ports:
+        - containerPort: 8890
+          name: main
+        - containerPort: 1111
+          name: another
+        - containerPort: 80
+          name: the-eighty
+        - containerPort: 443
+          name: tls
+        env:
+          - name: DBA_PASSWORD
+            value: "virtuoso"
+          - name: SPARQL_UPDATE
+            value: "true"
+          - name: DEFAULT_GRAPH
+            value: "https://virtuoso.nanosolveit.cloud.eu"
+          - name: SNORQL_ENDPOINT
+            value: "https://query.wikidata.org/sparql"    
+          - name: SNORQL_EXAMPLES_REPO
+            value: "https://api.github.com/repos/egonw/SARS-CoV-2-Queries/contents/sparql"
+          - name: SNORQL_TITLE
+            value: "SNORQL: A SPARQL Explorer - Extended Edition"
+        volumeMounts:
+        - mountPath: /data
+          name: path-to-virtuoso-data-folder
+        - mountPath: /import
+          name: path-to-virtuoso-import-folder
+      volumes:
+      - name: path-to-virtuoso-data-folder
+        emptyDir: {}
+      - name: path-to-virtuoso-import-folder
+        emptyDir: {}

@@ -1,0 +1,35 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaqpot-python-generic-service-1
+  namespace: modelsbase
+spec:
+  selector:
+    app: jaqpot-python-generic-1
+  ports:
+  - protocol: TCP
+    port: 8002
+    targetPort: 8002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaqpot-python-generic-1
+  namespace: modelsbase
+spec:
+  selector:
+    matchLabels:
+      app: jaqpot-python-generic-1
+  replicas: 1
+  template:
+    metadata:
+      name: jaqpot-python-generic-1
+      labels:
+        app: jaqpot-python-generic-1
+    spec:
+      containers:
+      - name: jaqpot-python-generic-1
+        image: euclia/jaqpot-python-generic:1.0.0
+        ports:
+        - containerPort: 8002
+

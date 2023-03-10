@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oidc-secret
+  namespace: modelsbase
+data:
+  clientid: bW9kZWxzYmFzZS1hcGk=
+  secret: Y2E5ZmNlODQtZGRmYS00YjE5LThlNzYtMzQ1MGQyMDcxYzM3

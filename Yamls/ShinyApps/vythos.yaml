@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vythos-service
+  namespace: shiny-apps
+spec:
+  type: NodePort
+  selector:
+    app: vythos-app
+  ports:
+  - protocol: TCP
+    port: 3838
+    targetPort: 3838
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vythos-app
+  namespace: shiny-apps
+spec:
+  selector:
+    matchLabels:
+      app: vythos-app
+  replicas: 1 
+  template: 
+    metadata:
+      name: vythos-app
+      labels:
+        app: vythos-app
+    spec:
+      containers:
+      - name: vythos-app
+        image: demetradanae/vythos
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3838
+          name: vythos

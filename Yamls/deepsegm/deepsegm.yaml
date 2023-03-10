@@ -1,0 +1,59 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: deepsegm-service
+  namespace: deepsegm
+spec:
+  selector:
+    app:  deepsegm-app
+  ports:
+  - protocol: TCP
+    port: 7777
+    targetPort: 7777
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deepsegm-app
+  namespace: deepsegm
+spec:
+  selector:
+    matchLabels:
+      app: deepsegm-app
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: deepsegm-app
+      labels:
+        app: deepsegm-app
+    spec:
+      containers:
+      - name: deepsegm-app
+        image: nanosolveit/deepsegm:nanosolveit
+        ports:
+        - containerPort: 7777
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: deepsegm-ingress
+  namespace: deepsegm
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+#    kubernetes.io/ingress.allow-http: "true"
+#    ingress.kubernetes.io/ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: /nanoImage
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"    
+spec:
+  tls:
+  - hosts:
+    - deepsegm.cloud.nanosolveit.eu
+    secretName: deepsegm-api-cert    
+  rules:
+  - host: deepsegm.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: deepsegm-service
+          servicePort: 7777
+        path: /

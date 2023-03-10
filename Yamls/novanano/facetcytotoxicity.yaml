@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: facetcytotoxicity-novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: facetcytotoxicity-novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: facetcytotoxicity-novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: facetcytotoxicity-novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: facetcytotoxicity-novanano-app
+      labels:
+        app: facetcytotoxicity-novanano-app
+    spec:
+      containers:
+      - name: facetcytotoxicity-novanano-app
+        image: novamechanics/facetcytotoxicity
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

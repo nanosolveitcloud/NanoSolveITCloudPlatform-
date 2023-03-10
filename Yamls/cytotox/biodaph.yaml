@@ -1,0 +1,34 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: biodaph-service
+  namespace: nanopot
+spec:
+  selector:
+    app: biodaph-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: biodaph-app
+  namespace: nanopot
+spec:
+  selector:
+    matchLabels:
+      app: biodaph-app
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: biodaph-app
+      labels:
+        app: biodaph-app
+    spec:
+      containers:
+      - name: biodaph-app
+        image: nanosolveit/biodaph
+        ports:
+        - containerPort: 80

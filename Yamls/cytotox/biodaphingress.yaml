@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: biodaph-app-secure
+  namespace: nanopot
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - biodaph.cloud.nanosolveit.eu
+    secretName: biodaph-app-cert-ingress
+  rules:
+  - host: biodaph.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: biodaph-service
+          servicePort: 80
+        path: /

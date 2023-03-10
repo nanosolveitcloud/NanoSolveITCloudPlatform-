@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: novanano-app
+      labels:
+        app: novanano-app
+    spec:
+      containers:
+      - name: novanano-app
+        image: atsoumanis/novanano
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

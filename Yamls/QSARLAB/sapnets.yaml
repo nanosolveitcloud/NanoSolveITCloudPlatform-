@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: qsar-service
+  namespace: qsarlab
+spec:
+  type: NodePort
+  selector:
+    app: qsar-app
+  ports:
+  - protocol: TCP
+    port: 8050
+    targetPort: 8050
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qsar-app
+  namespace: qsarlab
+spec:
+  selector:
+    matchLabels:
+      app: qsar-app
+  replicas: 1 
+  template: 
+    metadata:
+      name: qsar-app
+      labels:
+        app: qsar-app
+    spec:
+      containers:
+      - name: qsar-app
+        image: qsarlabltd/sapnets:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8050
+          name: qsar-app

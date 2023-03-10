@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: funmappone-app-secure
+  namespace: shiny-apps
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts: 
+    - funmappone.cloud.nanosolveit.eu
+    secretName: funmappone-app-cert
+  rules:
+  - host: funmappone.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: funmappone-service
+          servicePort: 3838
+        path: /

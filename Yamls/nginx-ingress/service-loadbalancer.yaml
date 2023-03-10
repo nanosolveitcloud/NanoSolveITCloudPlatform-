@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+spec:
+  type: LoadBalancer
+  externalIPs:
+  - 195.251.21.214
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  selector:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+spec:
+  type: LoadBalancer
+  externalIPs:
+  - 192.168.10.100
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  selector:
+#    app: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller

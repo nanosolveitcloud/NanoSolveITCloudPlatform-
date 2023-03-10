@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: lungexp-novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: lungexp-novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lungexp-novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: lungexp-novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: lungexp-novanano-app
+      labels:
+        app: lungexp-novanano-app
+    spec:
+      containers:
+      - name: lungexp-novanano-app
+        image: novamechanics/lungexposure
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

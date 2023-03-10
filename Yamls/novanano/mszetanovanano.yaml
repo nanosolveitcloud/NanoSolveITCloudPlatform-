@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mszeta-novanano-service
+  namespace: novanano-apps
+spec:
+  selector:
+    app: mszeta-novanano-app
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mszeta-novanano-app
+  namespace: novanano-apps
+spec:
+  selector:
+    matchLabels:
+      app: mszeta-novanano-app
+  replicas: 1
+  template:
+    metadata:
+      name: mszeta-novanano-app
+      labels:
+        app: mszeta-novanano-app
+    spec:
+      containers:
+      - name: mszeta-novanano-app
+        image: atsoumanis/mszeta
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http

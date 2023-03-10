@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: oidc
+  namespace: oidc
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.allow-http: "true"    
+spec:
+  rules:
+  - host: login.cloud.nanosolveit.eu
+    http:
+      paths:
+      - backend:
+          serviceName: keycloak
+          servicePort: 8080
+        path: /
